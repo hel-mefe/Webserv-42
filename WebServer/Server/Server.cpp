@@ -29,6 +29,7 @@ Server& Server::operator=(const Server &s)
     Attr = s.getServerAttr();
     Response = s.getResponseHandler();
     Request = s.getRequestHandler();
+    return (*this);
 }
 
 Server::~Server()

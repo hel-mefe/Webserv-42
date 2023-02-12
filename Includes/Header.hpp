@@ -9,16 +9,21 @@
 # include <unordered_set>
 # include <map>
 # include <set>
+# include <fstream>
+# include <ios>
+# include <string>
 
-# define cout std::cout
-# define cin std::cin
-# define string std::string
-# define vector std::vector
-# define list std::list
-# define map std::map
-# define set std::set
-# define unordered_map std::unordered_map
-# define unordered_set std::unordered_set
+// # define cout std::cout
+// # define cin std::cin
+// # define fstream std::fstream
+// # define ifstream std::ifstream
+// # define string std::string
+// # define vector std::vector
+// # define list std::list
+// # define map std::map
+// # define set std::set
+// # define unordered_map std::unordered_map
+// # define unordered_set std::unordered_set
 
 # define HashMap std::unordered_map
 # define HashSet std::unordered_set

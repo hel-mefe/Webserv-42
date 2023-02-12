@@ -5,14 +5,14 @@
 
 typedef struct ServerAttributes
 {
-    string server_name;
+    std::string server_name;
     int port;
 }   ServerAttr;
 
 typedef struct HttpConfigs
 {
-    string  root;
-    vector<string> indexes;
+    std::string  root;
+    std::vector<std::string> indexes;
     bool    auto_indexing;
 }   HttpConfigs;
 

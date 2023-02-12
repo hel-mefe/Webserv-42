@@ -1,0 +1,21 @@
+https
+{
+    server1{
+        server_name arsenal
+        port 8080
+    }
+    server2
+    {
+        server_name bobby
+        port 8081
+
+    }
+    server3
+    {
+        server_name whatever
+        port 8082
+
+    }
+}
+
+

@@ -9,7 +9,7 @@
 class WebServer
 {
     private:
-        vector<Server *> Servers;
+        std::vector<Server *> Servers;
         HttpConfigs      *GlobalHttpConfigs;
         ConfigFileParser *Parser;
     public:

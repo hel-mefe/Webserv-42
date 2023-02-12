@@ -3,11 +3,11 @@
 
 class ResponseHandler
 {
-    private:
-        pass ;
-    public:
-        ResponseHandler();
-        ~ResponseHandler();
+    // private:
+    //     pass ;
+    // public:
+    //     ResponseHandler();
+    //     ~ResponseHandler();
 } ;
 
 # endif
