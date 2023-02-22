@@ -25,7 +25,7 @@ class Server
         serverAttr*         getServerAttr() const;
         void                set_server_attr(serverAttr *_Attr);
         void                set_location_map(std::string location_name, locationConfigs &configs);
-
+        void                print_data();
 } ;
 
 # endif

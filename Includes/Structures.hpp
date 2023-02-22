@@ -53,4 +53,11 @@ typedef struct HttpConfigs
 }   httpConfigs;
 
 
+typedef struct Request
+{
+    std::string     method;
+    bool            connection;
+    int             content_length;
+}   requestParsed;
+
 #endif

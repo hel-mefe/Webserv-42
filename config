@@ -6,11 +6,10 @@ http
     server1
     {
         server_name arsenal
-        index index.html index.hpp
+        index index.html index.php
         port 8080
-        
-        
-        
+        root /home
+        index index.asp
         location / {
             root /ok/kl
         }
@@ -45,7 +44,4 @@ http
         server_name server4_name
         port 9999
     }
-    root /Hello/World
 }
-
-

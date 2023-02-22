@@ -119,7 +119,6 @@ bool is_brackets_correct(std::vector<std::vector<std::string> > &words)
             }
         }
     }
-    std::cout << st.size() << std::endl;
     return st.empty();
 }
 
@@ -159,7 +158,6 @@ std::string ConfigFileParser::get_str(std::vector<std::vector<std::string> > &ve
         i++;
     }
 
-    std::cout << "result = " << res << std::endl;
     return (res);
 }
 
@@ -414,38 +412,47 @@ void    ConfigFileParser::parse_words(int a, int b)
 {
     bool is_http = true, is_server = false, is_location = false;
     int i = 0, j = 0;
-    while (i < sz(words) && words[i][j] != "{")
-    {
-        j = 0;
-        while (j < sz(words[i]) && words[i][j] != "}")
-            j++;
-        if (j < sz(words[i]) && words[i][j][0] == '{')
-            break ;
-        i++;
-    }
-    j++;
-    // while (i < sz(words))
+    if (!sz(words))
+        return ;
+    if (sz(words[i]) > 1)
+        i = 1, j = 0;
+    else if (sz(words[i]) == 1)
+        i = 1, j = 1;
+    // while (i < sz(words) && words[i][j] != "{")
     // {
+    //     j = 0;
     //     while (j < sz(words[i]))
     //     {
-    //         while (j < sz(words[i]) && is_bracket(words[i][j]))
-    //             j++;
-    //         parse_http_configs(i, j);
-    //         // while (j < sz(words[i]) && is_bracket(words[i][j]))
-    //         //     j++;
-    //         if (i >= sz(words))
+    //         if (!words[i][j].compare("}"))
     //             break ;
-    //         parse_server(i, j);
-    //         if (i >= sz(words))
-    //             break ;
-    //         std::cout << i << " " << j << std::endl;
-    //         while (j < sz(words[i]) && is_bracket(words[i][j]))
-    //             j++;
     //         j++;
     //     }
-    //     j = 0;
+    //     if (j < sz(words[i]) && words[i][j] == "{")
+    //         break ;
     //     i++;
     // }
+    // j++;
+    while (i < sz(words))
+    {
+        while (j < sz(words[i]))
+        {
+            while (j < sz(words[i]) && is_bracket(words[i][j]))
+                j++;
+            parse_http_configs(i, j);
+            // while (j < sz(words[i]) && is_bracket(words[i][j]))
+            //     j++;
+            if (i >= sz(words))
+                break ;
+            parse_server(i, j);
+            if (i >= sz(words))
+                break ;
+            while (j < sz(words[i]) && is_bracket(words[i][j]))
+                j++;
+            j++;
+        }
+        j = 0;
+        i++;
+    }
 }
 
 void    ConfigFileParser::print_http_words()
@@ -718,6 +725,7 @@ bool ConfigFileParser::is_config_file_valid() // checks if the config file synta
     fill_tokens();
     extract_lines_from_file(c_stream, lines);
     extract_words_from_lines(words);
+    // print_words(words);
     if (!is_brackets_correct(words))
     {
         c_stream.close();
@@ -822,17 +830,17 @@ void    ConfigFileParser::fill_location_attributes(locationConfigs &l_configs, i
     {
         std::string token_name = nodes[i].location_blocks[j][0];
         if (token_name == "auto_indexing")
-            l_configs.auto_indexing = get_auto_indexing(nodes[i].words[j]);
+            l_configs.auto_indexing = get_auto_indexing(nodes[i].location_blocks[j]);
         else if (token_name == "connection")
-            l_configs.connection = get_connection(nodes[i].words[j]);
+            l_configs.connection = get_connection(nodes[i].location_blocks[j]);
         else if (token_name == "index")
         {
-            l_configs.indexes = get_vector_of_data(nodes[i].words[j]);
+            l_configs.indexes = get_vector_of_data(nodes[i].location_blocks[j]);
             l_configs.indexes_set = vector_to_hashset(l_configs.indexes);
         }
         else if (token_name == "allowed_methods")
         {
-            l_configs.allowed_methods = get_vector_of_data(nodes[i].words[j]);
+            l_configs.allowed_methods = get_vector_of_data(nodes[i].location_blocks[j]);
             l_configs.allowed_methods_set = vector_to_hashset(l_configs.allowed_methods);
         }
         else if (token_name == "root")
@@ -841,13 +849,13 @@ void    ConfigFileParser::fill_location_attributes(locationConfigs &l_configs, i
 }
 
 
-bool ConfigFileParser::fill_servers_data(std::vector<Server> *servers)
+bool ConfigFileParser::fill_servers_data(std::vector<Server *> *servers)
 {
     HashSet<std::string> already_parsed;
 
     for (int i = 0; i < sz(nodes); i++)
     {
-        Server      server;
+        Server      *server = new Server();
         serverAttr *attr = new serverAttr();
         locationConfigs l_configs;
         std::string     location_name;
@@ -856,9 +864,9 @@ bool ConfigFileParser::fill_servers_data(std::vector<Server> *servers)
         if (sz(nodes[i].location_blocks))
         {
             location_name = nodes[i].location_blocks[0][1];
-            server.set_location_map(location_name, l_configs);
+            server->set_location_map(location_name, l_configs);
         }
-        server.set_server_attr(attr);
+        server->set_server_attr(attr);
         servers->push_back(server);
     }
     return (true);
@@ -885,13 +893,12 @@ bool ConfigFileParser::fill_http_data(httpConfigs *http_data)
     return (true);
 }
 
-bool ConfigFileParser::parse_config_file(httpConfigs *http_data, std::vector<Server> *servers)
+bool ConfigFileParser::parse_config_file(httpConfigs *http_data, std::vector<Server *> *servers)
 {
     if (!is_config_file_valid()) // O(N) to check if the file is valid or not
         return (false);
     // if (!DataExtractor.extract_data(http_data, servers)) // O(N) to extract the data
     //     return (false) ;
     // return (true) ;
-    exit(0);
     return (fill_http_data(http_data) && fill_servers_data(servers));
 }

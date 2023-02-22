@@ -78,7 +78,7 @@ class ConfigFileParser
         bool    is_location_block_valid(std::vector<std::string> &block);
         // bool parse_http_token(HttpConfig *configs, std::string token, int &i, int &j);
 
-        bool    fill_servers_data(std::vector<Server> *servers);
+        bool    fill_servers_data(std::vector<Server *> *servers);
         bool    fill_http_data(httpConfigs *http_data);
         void    fill_server_attributes(serverAttr &attr, int i);
         void    fill_location_attributes(locationConfigs &l_configs, int i);
@@ -89,7 +89,7 @@ class ConfigFileParser
         std::vector<std::string>    get_vector_of_data(std::vector<std::string> &line); 
         HashSet<std::string>        vector_to_hashset(std::vector<std::string> &vec);
 
-        bool    parse_config_file(httpConfigs *http_data, std::vector<Server> *servers);
+        bool    parse_config_file(httpConfigs *http_data, std::vector<Server *> *servers);
 
 } ;
 
