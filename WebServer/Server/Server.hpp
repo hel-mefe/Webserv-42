@@ -9,9 +9,10 @@
 class Server
 {
     private:
-        RequestHandler  *Request;
-        ResponseHandler *Response;
-        ServerAttr      *Attr;
+        RequestHandler                          *Request;
+        ResponseHandler                         *Response;
+        serverAttr                              *Attr;
+        HashMap<std::string, locationConfigs>   dir_configs; // directory configs (dir -> its configs)
     public:
         Server();
         Server& operator=(const Server&);
@@ -21,7 +22,9 @@ class Server
         // Getters
         RequestHandler*     getRequestHandler() const;
         ResponseHandler*    getResponseHandler() const;
-        ServerAttr*         getServerAttr() const;
+        serverAttr*         getServerAttr() const;
+        void                set_server_attr(serverAttr *_Attr);
+        void                set_location_map(std::string location_name, locationConfigs &configs);
 
 } ;
 

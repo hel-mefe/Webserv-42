@@ -9,9 +9,9 @@
 class WebServer
 {
     private:
-        std::vector<Server *> Servers;
-        HttpConfigs      *GlobalHttpConfigs;
-        ConfigFileParser *Parser;
+        std::vector<Server>  *servers;
+        httpConfigs          *globalHttpConfigs;
+        ConfigFileParser     *parser;
     public:
         WebServer();
         WebServer(const WebServer& w);

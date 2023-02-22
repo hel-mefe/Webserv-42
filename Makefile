@@ -1,6 +1,9 @@
 EXEC = Webserv
-CPP_VERSION = -std=c++98
-SRCS = main.cpp WebServer/WebServer.cpp WebServer/ConfigFileParser/ConfigFileParser.cpp WebServer/Server/Server.cpp WebServer/Server/RequestHandler/RequestHandler.cpp WebServer/Server/RequestHandler/RequestParser/RequestParser.cpp WebServer/Server/ResponseHandler/ResponseHandler.cpp
+CPP_VERSION = -std=c++98 -fsanitize=address
+SRCS = main.cpp WebServer/WebServer.cpp WebServer/ConfigFileParser/TokensChecker.cpp WebServer/ConfigFileParser/ConfigFileParser.cpp \
+WebServer/Server/Server.cpp WebServer/Server/RequestHandler/RequestHandler.cpp \
+WebServer/Server/RequestHandler/RequestParser/RequestParser.cpp \
+WebServer/Server/ResponseHandler/ResponseHandler.cpp
 
 ALL: $(EXEC)
 

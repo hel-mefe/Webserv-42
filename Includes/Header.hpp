@@ -7,6 +7,8 @@
 # include <list>
 # include <unordered_map>
 # include <unordered_set>
+# include <queue>
+# include <stack>
 # include <map>
 # include <set>
 # include <fstream>
@@ -25,9 +27,25 @@
 // # define unordered_map std::unordered_map
 // # define unordered_set std::unordered_set
 
+# define PORT short int
+# define SOCKET int
 # define HashMap std::unordered_map
 # define HashSet std::unordered_set
 
-# define sz ((int)x.size())
+# define sz(x) ((int)x.size())
 
+enum TOKEN
+{
+    SHORT_INT,
+    INT,
+    DIRECTORY,
+    STRING,
+    STRING_VECTOR,
+    METHOD,
+    METHOD_VECTOR,
+    ON_OFF,
+    CONNECTION
+} ;
+
+// std::string PARSING_ERROR;
 # endif

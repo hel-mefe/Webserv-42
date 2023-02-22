@@ -1,21 +1,51 @@
-https
+http
 {
-    server1{
+    allowed_methods GET POST DELETE
+    root /directory1/directoy2/
+
+    server1
+    {
         server_name arsenal
+        index index.html index.hpp
         port 8080
+        
+        
+        
+        location / {
+            root /ok/kl
+        }
     }
+
+    allowed_methods GET
+
     server2
     {
         server_name bobby
         port 8081
-
+        location /ll {
+            root /fdkjkfd
+            auto_indexing on
+            index index.html
+        }
     }
     server3
     {
         server_name whatever
-        port 8082
-
+        port 8080
+        connection keep-alive
+        auto_indexing on
     }
+    server4
+    {
+        server_name justname
+        port 9090
+    }
+    server5
+    {
+        server_name server4_name
+        port 9999
+    }
+    root /Hello/World
 }
 
 

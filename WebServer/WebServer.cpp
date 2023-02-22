@@ -2,8 +2,9 @@
 
 WebServer::WebServer()
 {
-    Parser = new ConfigFileParser();
-    GlobalHttpConfigs = new HttpConfigs();
+    parser = new ConfigFileParser();
+    globalHttpConfigs = new httpConfigs();
+    servers = new std::vector<Server>();
     return ;
 }
 

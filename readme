@@ -1,0 +1,38 @@
+/***
+These are some special conventions to collaborate flawlessly
+
+Structs
+- Always named with camelStyle (small letter at the beginning then Capital letter for words inside it)
+
+Classes
+- Always named with PascalCase (Capital Letter at the beginning and each word is starting with Capital as well)
+
+
+Each class focusses on one proper problem and solves it optimally (nearly-optimal if not optimal)
+
+
+Structure of the program is as follows
+
+
+        -----> ConfigFileParser (class that parses the config file)
+
+WebServ ----> globalHttpConfigs    (struct)     
+
+        -----> Vector<Server> Servers (vector of classes)
+
+And each Server is a class that has the following attributes:
+
+-------> servAttributes (struct)
+
+-------> HashMap<string, locationConfigs> (location, struct)
+
+-------> RequestHandler (class that will handle all the requests from parsing to preparing the data to the response builder)
+
+-------> ResponseHandler (class that will handle the responses)
+
+(LogicalSide) RequestHandler is a class that will handle everything about the requests from parsing them
+to preparing the data for the ResponseBuilder class, here where all the work should be put
+
+(NetworkingSide) ResponseHandler -> as long as the RequestHandler will prepare the data for this class then
+the main work for this class is just serving the clients, or we can say Networking side
+***/
