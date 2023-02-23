@@ -1,47 +1,21 @@
 http
 {
-    allowed_methods GET POST DELETE
-    root /directory1/directoy2/
-
-    server1
+    server
     {
-        server_name arsenal
-        index index.html index.php
+        server_name name
         port 8080
-        root /home
-        index index.asp
-        location / {
-            root /ok/kl
-        }
+        root /ro
     }
 
-    allowed_methods GET
-
-    server2
+    server
     {
-        server_name bobby
-        port 8081
-        location /ll {
-            root /fdkjkfd
-            auto_indexing on
-            index index.html
-        }
-    }
-    server3
-    {
-        server_name whatever
-        port 8080
-        connection keep-alive
-        auto_indexing on
-    }
-    server4
-    {
-        server_name justname
+        server_name kdf
         port 9090
-    }
-    server5
-    {
-        server_name server4_name
-        port 9999
+        root /klfdksf
+        location /merci
+        {
+            root /ok
+            port 9999
+        }
     }
 }

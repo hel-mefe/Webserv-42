@@ -91,6 +91,8 @@ class ConfigFileParser
 
         bool    parse_config_file(httpConfigs *http_data, std::vector<Server *> *servers);
 
+        int count_words();
+
 } ;
 
 # endif

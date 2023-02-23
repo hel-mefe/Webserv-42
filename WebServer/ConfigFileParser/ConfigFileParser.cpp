@@ -715,6 +715,22 @@ bool ConfigFileParser::is_servers_valid()
     return (true);
 }
 
+int ConfigFileParser::count_words()
+{
+    int i = 0, res = 0;
+    while (i < sz(words))
+    {
+        int j = 0;
+        while (j < sz(words[i]))
+        {
+            res++;
+            j++;
+        }
+        i++;
+    }
+    return (res);
+}
+
 bool ConfigFileParser::is_config_file_valid() // checks if the config file syntax is valid or not
 {
     std::fstream c_stream;
@@ -734,6 +750,12 @@ bool ConfigFileParser::is_config_file_valid() // checks if the config file synta
     // std::cout << "BRACKETS ARE COMPLETELY CORRECT!" << std::endl;
     build_brackets_queue();
     std::vector<std::string> k;
+    int words_size = count_words();
+    if (words_size < 3 || (words_size > 3 && words[0][0] != "http")) // 1 -> http | 2 -> { 3-> }
+    {
+        c_stream.close();
+        return (false) ;
+    }
     parse_words(brackets_q.front().second.first, brackets_q.front().second.second);
     // print_http_words();
     // if (!parse_http())

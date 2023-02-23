@@ -60,4 +60,13 @@ typedef struct Request
     int             content_length;
 }   requestParsed;
 
+typedef struct Header
+{
+    std::string method;
+    std::string connection;
+    std::string path;
+    std::string http_version;
+    int         content_length;
+}   header;
+
 #endif
