@@ -14,6 +14,19 @@
 # include <fstream>
 # include <ios>
 # include <string>
+# include <exception>
+
+/*** Sockets dependencies ***/
+
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <sys/types.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <fcntl.h>
+# include <netdb.h>
 
 // # define cout std::cout
 // # define cin std::cin

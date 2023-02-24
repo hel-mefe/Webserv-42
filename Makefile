@@ -1,9 +1,9 @@
 EXEC = Webserv
 CPP_VERSION = -std=c++98 -fsanitize=address
 SRCS = main.cpp WebServer/WebServer.cpp WebServer/ConfigFileParser/TokensChecker.cpp WebServer/ConfigFileParser/ConfigFileParser.cpp \
-WebServer/Server/Server.cpp WebServer/Server/RequestHandler/RequestHandler.cpp \
-WebServer/Server/RequestHandler/RequestParser/RequestParser.cpp \
-WebServer/Server/ResponseHandler/ResponseHandler.cpp
+WebServer/Server/Server.cpp WebServer/Server/RequestResponse/RequestResponse.cpp \
+WebServer/Server/RequestResponse/RequestParser/RequestParser.cpp WebServer/Server/RequestResponse/ResponseBuilder/ResponseBuilder.cpp  \
+WebServer/gnl/get_next_line.cpp WebServer/gnl/get_next_line_utils.cpp
 
 ALL: $(EXEC)
 

@@ -2,6 +2,7 @@
 # define CONFIG_FILE_PARSER_HPP
 
 # include "../../Includes/Header.hpp"
+# include "../../Includes/Exceptions.hpp"
 # include "../Server/Server.hpp"
 # include "TokensChecker.hpp"
 # include "Ast.hpp"
@@ -16,28 +17,27 @@ typedef struct ast_node
 class ConfigFileParser
 {
     private:
-        TokensChecker                                               tc; // TokensChecker
-        std::string                                                 config_file;
-        std::vector<std::string>                                    lines;
-        std::vector<std::vector<std::string> >                      words;
-        std::vector<std::pair<std::string, std::pair<int, int> > >  brackets_q;
-        std::vector<t_node>                                         nodes; // 1st one for http and others for servers
-        std::vector<std::vector<std::string> >                                    http_as_words;
-        HashMap<std::string, std::string>                           http_configs;
-        HashMap<std::string, TOKEN>                                 http_tokens; // token string mapped to the type of answer it accepts
-        HashMap<std::string, TOKEN>                                 server_tokens; // same as above map
-        HashMap<std::string, TOKEN>                                 location_tokens;
+        TokensChecker                                                   tc; // TokensChecker
+        std::vector<std::string>                                        lines;
+        std::vector<std::vector<std::string> >                          words;
+        std::vector<std::pair<std::string, std::pair<int, int> > >      brackets_q;
+        std::vector<t_node>                                             nodes; // 1st one for http and others for servers
+        std::vector<std::vector<std::string> >                          http_as_words;
+        HashSet<int>                                                    ports_set;
+        HashMap<std::string, std::string>                               http_configs;
+        HashMap<std::string, TOKEN>                                     http_tokens; // token string mapped to the type of answer it accepts
+        HashMap<std::string, TOKEN>                                     server_tokens; // same as above map
+        HashMap<std::string, TOKEN>                                     location_tokens;
         // Ast                                     a_tree;
     public:
         ConfigFileParser();
-        ConfigFileParser(std::string config_file);
         ConfigFileParser(const ConfigFileParser& p);
         ConfigFileParser& operator=(const ConfigFileParser& p) ;
         ~ConfigFileParser();
 
         std::string  get_config_file() const;
-        bool    is_config_file_valid();
-        // bool    parse_config_file(vector<Server *> &Servers, HttpConfigs &globalConfigs);
+        bool    is_config_file_valid(std::string &config_file);
+        // bool    parse_config_file(vector<Server *> &Servers, t_http_configs &globalConfigs);
         void    extract_lines_from_file(std::fstream &f_stream, std::vector<std::string> &lines);
         void    print_vector_lines(std::vector<std::string> &lines);
 
@@ -65,7 +65,7 @@ class ConfigFileParser
 
         void        fill_http_hashmap();
         void        fill_server_hashmap();
-        // bool fill_global_http_configs(HttpConfigs *configs);
+        // bool fill_global_http_configs(t_http_configs *configs);
         void        fill_location_hashmap();
         void        fill_tokens();
 
@@ -79,9 +79,9 @@ class ConfigFileParser
         // bool parse_http_token(HttpConfig *configs, std::string token, int &i, int &j);
 
         bool    fill_servers_data(std::vector<Server *> *servers);
-        bool    fill_http_data(httpConfigs *http_data);
-        void    fill_server_attributes(serverAttr &attr, int i);
-        void    fill_location_attributes(locationConfigs &l_configs, int i);
+        bool    fill_http_data(t_http_configs *http_data);
+        void    fill_server_attributes(t_server_configs &attr, int i);
+        void    fill_location_attributes(t_location_configs &l_configs, int i);
         // data parsing getters;
         bool                        get_auto_indexing(std::vector<std::string> &line);
         bool                        get_connection(std::vector<std::string> &line);
@@ -89,7 +89,7 @@ class ConfigFileParser
         std::vector<std::string>    get_vector_of_data(std::vector<std::string> &line); 
         HashSet<std::string>        vector_to_hashset(std::vector<std::string> &vec);
 
-        bool    parse_config_file(httpConfigs *http_data, std::vector<Server *> *servers);
+        bool    parse_config_file(std::string config_file, t_http_configs *http_data, std::vector<Server *> *servers);
 
         int count_words();
 

@@ -17,11 +17,13 @@ typedef struct ServerAttributes
     HashSet<std::string>                allowed_cgi_set;
     HashSet<std::string>                locations_set;
     HashSet<std::string>                indexes_set;
+    int                                 max_connections;
     bool                                directory_listing;
     bool                                auto_indexing;
     bool                                connection; // keep-alive or closed
 
-}   serverAttr;
+    ServerAttributes() : max_connections(5){}
+}   t_server_configs;
 
 typedef struct LocationConfigs
 {
@@ -34,7 +36,7 @@ typedef struct LocationConfigs
     HashSet<std::string>                allowed_methods_set;
     bool                                auto_indexing;
     bool                                connection;
-}   locationConfigs;
+}   t_location_configs;
 
 typedef struct HttpConfigs
 {
@@ -50,23 +52,31 @@ typedef struct HttpConfigs
     bool                                directory_listing;
     bool                                auto_indexing;
     bool                                connection; // keep-alive or closed
-}   httpConfigs;
+}   t_http_configs;
 
 
-typedef struct Request
+typedef struct response
 {
-    std::string     method;
-    bool            connection;
-    int             content_length;
-}   requestParsed;
+    std::string             method;
+    std::string             connection;
+    std::string             status_line;
+    int                     status_code;
+    int                     content_length;
+}   t_response;
 
 typedef struct Header
 {
-    std::string method;
-    std::string connection;
-    std::string path;
-    std::string http_version;
-    int         content_length;
-}   header;
+    std::string     method;
+    std::string     connection;
+    std::string     path;
+    std::string     http_version;
+    int             content_length;
+}   t_request;
+
+typedef struct globalVars
+{
+    HashSet<std::string>        supported_methods_set;
+    HashMap<int, std::string>   codes_map;
+}   globals;
 
 #endif

@@ -3,8 +3,11 @@ http
     server
     {
         server_name name
-        port 8080
+        port 8090
         root /ro
+        index index.html index.php home.html home.php
+        allowed_methods GET POST DELETE
+        max_connections 2
     }
 
     server

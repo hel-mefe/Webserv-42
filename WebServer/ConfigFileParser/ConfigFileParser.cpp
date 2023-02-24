@@ -5,19 +5,9 @@ ConfigFileParser::ConfigFileParser()
     return ;
 }
 
-ConfigFileParser::ConfigFileParser(std::string config_name)
-{
-    config_file = config_name;
-}
-
 ConfigFileParser::ConfigFileParser(const ConfigFileParser& p)
 {
-    config_file = p.get_config_file();
-}
-
-std::string  ConfigFileParser::get_config_file() const
-{
-    return (config_file);
+    return ;
 }
 
 ConfigFileParser::~ConfigFileParser()
@@ -500,11 +490,13 @@ void    ConfigFileParser::fill_server_hashmap()
 {
     server_tokens.insert(std::make_pair("root", DIRECTORY));
     server_tokens.insert(std::make_pair("auto_indexing", ON_OFF));
+    server_tokens.insert(std::make_pair("max_connections", INT));
     server_tokens.insert(std::make_pair("connection", CONNECTION));
     server_tokens.insert(std::make_pair("server_name", STRING));
     server_tokens.insert(std::make_pair("port", SHORT_INT));
     server_tokens.insert(std::make_pair("location", DIRECTORY));
     server_tokens.insert(std::make_pair("index", STRING_VECTOR));
+    server_tokens.insert(std::make_pair("allowed_methods", STRING_VECTOR));
 }
 
 void    ConfigFileParser::fill_location_hashmap()
@@ -731,7 +723,7 @@ int ConfigFileParser::count_words()
     return (res);
 }
 
-bool ConfigFileParser::is_config_file_valid() // checks if the config file syntax is valid or not
+bool ConfigFileParser::is_config_file_valid(std::string &config_file) // checks if the config file syntax is valid or not
 {
     std::fstream c_stream;
     bool        is_everything_valid;
@@ -777,10 +769,12 @@ bool ConfigFileParser::is_config_file_valid() // checks if the config file synta
     return (is_everything_valid) ;
 }
 
-void    ConfigFileParser::fill_server_attributes(serverAttr &attr, int i)
+void    ConfigFileParser::fill_server_attributes(t_server_configs &attr, int i)
 {
     for (int j = 0; j < sz(nodes[i].words); j++)
     {
+        if (nodes[i].id != "server")
+            throw InvalidHttpToken() ;
         std::string token_name = nodes[i].words[j][0];
         if (token_name == "auto_indexing")
             attr.auto_indexing = get_auto_indexing(nodes[i].words[j]);
@@ -789,7 +783,12 @@ void    ConfigFileParser::fill_server_attributes(serverAttr &attr, int i)
         else if (token_name == "server_name")
             attr.server_name = nodes[i].words[j][1];
         else if (token_name == "port")
+        {
             attr.port = get_port(nodes[i].words[j]);
+            if (ports_set.find(attr.port) != ports_set.end())
+                throw PortAlreadyUsed();
+            ports_set.insert(attr.port);
+        }
         else if (token_name == "index")
         {
             attr.indexes = get_vector_of_data(nodes[i].words[j]);
@@ -798,10 +797,17 @@ void    ConfigFileParser::fill_server_attributes(serverAttr &attr, int i)
         else if (token_name == "allowed_methods")
         {
             attr.allowed_methods = get_vector_of_data(nodes[i].words[j]);
+            for (int k = 0; k < sz(attr.allowed_methods); k++) // checking if all methods are valid
+            {
+                if (!tc.is_method(attr.allowed_methods[k]))
+                    throw InvalidMethod();
+            }
             attr.allowed_methods_set  = vector_to_hashset(attr.allowed_methods);
         }
         else if (token_name == "root")
             attr.root = nodes[i].words[j][1];
+        else if (token_name == "max_connections")
+            attr.max_connections = std::stoi(nodes[i].words[j][1]);
     }
 }
 
@@ -846,7 +852,7 @@ HashSet<std::string>    ConfigFileParser::vector_to_hashset(std::vector<std::str
 }
 
 
-void    ConfigFileParser::fill_location_attributes(locationConfigs &l_configs, int i)
+void    ConfigFileParser::fill_location_attributes(t_location_configs &l_configs, int i)
 {
     for (int j = 1; j < sz(nodes[i].location_blocks); j++)
     {
@@ -863,6 +869,11 @@ void    ConfigFileParser::fill_location_attributes(locationConfigs &l_configs, i
         else if (token_name == "allowed_methods")
         {
             l_configs.allowed_methods = get_vector_of_data(nodes[i].location_blocks[j]);
+            for (int j = 0; j < sz(l_configs.allowed_methods); j++) // checking if all methods are valid
+            {
+                if (!tc.is_method(l_configs.allowed_methods[j]))
+                    throw InvalidMethod();
+            }
             l_configs.allowed_methods_set = vector_to_hashset(l_configs.allowed_methods);
         }
         else if (token_name == "root")
@@ -878,8 +889,8 @@ bool ConfigFileParser::fill_servers_data(std::vector<Server *> *servers)
     for (int i = 0; i < sz(nodes); i++)
     {
         Server      *server = new Server();
-        serverAttr *attr = new serverAttr();
-        locationConfigs l_configs;
+        t_server_configs *attr = new t_server_configs();
+        t_location_configs l_configs;
         std::string     location_name;
         fill_server_attributes(*attr, i);
         fill_location_attributes(l_configs, i);
@@ -888,13 +899,13 @@ bool ConfigFileParser::fill_servers_data(std::vector<Server *> *servers)
             location_name = nodes[i].location_blocks[0][1];
             server->set_location_map(location_name, l_configs);
         }
-        server->set_server_attr(attr);
+        server->set_server_configs(attr);
         servers->push_back(server);
     }
     return (true);
 }
 
-bool ConfigFileParser::fill_http_data(httpConfigs *http_data)
+bool ConfigFileParser::fill_http_data(t_http_configs *http_data)
 {
     HashSet<std::string> already_parsed;
 
@@ -908,16 +919,20 @@ bool ConfigFileParser::fill_http_data(httpConfigs *http_data)
         else if (token_name == "allowed_methods")
         {
             http_data->allowed_methods = get_vector_of_data(http_as_words[i]);
+            for (int j = 0; j < sz(http_data->allowed_methods); j++) // checking if all methods are valid
+            {
+                if (!tc.is_method(http_data->allowed_methods[j]))
+                    throw InvalidMethod();
+            }
             http_data->allowed_methods_set = vector_to_hashset(http_data->allowed_methods);
         }
     }
-    std::cout << "HTTP" << std::endl;
     return (true);
 }
 
-bool ConfigFileParser::parse_config_file(httpConfigs *http_data, std::vector<Server *> *servers)
+bool ConfigFileParser::parse_config_file(std::string config_file, t_http_configs *http_data, std::vector<Server *> *servers)
 {
-    if (!is_config_file_valid()) // O(N) to check if the file is valid or not
+    if (!is_config_file_valid(config_file)) // O(N) to check if the file is valid or not
         return (false);
     // if (!DataExtractor.extract_data(http_data, servers)) // O(N) to extract the data
     //     return (false) ;
