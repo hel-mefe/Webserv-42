@@ -20,6 +20,10 @@ vector<vector<int> >* func1()
 
 int main(void)
 {
-    vector<vector<int> > *o = func1();
-    cout << o->size() << " " << o->at(0)[0] << endl ;
+    vector<int> vec;
+    int t[] = {1,2,5,6,3,2,4,6,5,98989};
+    vec.insert(vec.begin(), t, t + 10);
+    // vector<vector<int> > *o = func1();
+    // cout << o->size() << " " << o->at(0)[0] << endl ;
+    cout << *vec.begin() << "  " << *--vec.end();
 }

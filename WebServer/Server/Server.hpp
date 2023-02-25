@@ -3,17 +3,20 @@
 
 # include "../../Includes/Header.hpp"
 # include "../../Includes/Structures.hpp"
+# include "../../Includes/Exceptions.hpp"
 # include "RequestResponse/RequestResponse.hpp"
 
 class Server
 {
     private:
+        MULTIPLEXER                                         mult;
         RequestResponse                                     *request_response;
         t_server_configs                                    *server_configs;
         t_http_configs                                      *http_configs;
         HashMap<std::string, t_location_configs>            *dir_configs; // directory configs (dir -> its configs)
     public:
         Server();
+        Server(MULTIPLEXER);
         Server& operator=(const Server&);
         Server(const Server&);
         ~Server();
@@ -25,6 +28,15 @@ class Server
         void                print_data();
 
         void    run();
+        // Multiplexers
+        void    build_with_kqueue();
+        void    build_with_select();
+        void    build_with_poll();
+
+        //Method handlers
+        void    handle_get_request(int fd, t_request *req);
+        void    handle_post_request(int fd, t_request *req);
+        void    handle_delete_request(int fd, t_request *req);
 } ;
 
 # endif

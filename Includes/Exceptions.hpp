@@ -30,5 +30,34 @@ class InvalidHttpToken : public std::exception
         }
 } ;
 
+class SocketException : public std::exception
+{
+    public:
+        const char *what() const _NOEXCEPT
+        {
+            return ("Error occured during opening the socket descriptor");
+        }
+} ;
+
+class BindException : public std::exception
+{
+    public:
+        const char *what() const _NOEXCEPT
+        {
+            return ("Bind error");
+        }
+} ;
+
+class ListenException : public std::exception
+{
+    public:
+        const char *what() const _NOEXCEPT
+        {
+            return ("Listen error");
+        }
+} ;
+
+
+
 
 # endif

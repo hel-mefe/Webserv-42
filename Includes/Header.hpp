@@ -57,7 +57,15 @@ enum TOKEN
     METHOD,
     METHOD_VECTOR,
     ON_OFF,
-    CONNECTION
+    CONNECTION 
+} ;
+
+enum MULTIPLEXER
+{
+    KQUEUE,
+    POLL,
+    SELECT,
+    EPOLL
 } ;
 
 // std::string PARSING_ERROR;

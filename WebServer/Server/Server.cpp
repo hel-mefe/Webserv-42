@@ -2,6 +2,16 @@
 
 Server::Server() : request_response(0), server_configs(0), http_configs(0), dir_configs(0)
 {
+    mult = KQUEUE;
+    request_response = new RequestResponse();
+    server_configs = new t_server_configs();
+    http_configs = new t_http_configs();
+    dir_configs = new HashMap<std::string, t_location_configs>();
+}
+
+Server::Server(MULTIPLEXER _mult)
+{
+    mult = _mult;
     request_response = new RequestResponse();
     server_configs = new t_server_configs();
     http_configs = new t_http_configs();
@@ -69,46 +79,35 @@ void print_request(t_request *r)
     std::cout << "Path: " << r->path << std::endl;
 }
 
-void    handle_get_request()
+void    Server::run() // the runner where the multiplexing will be (kevent, select, poll)
 {
-    std::cout << "Handling get request is running ..." << std::endl;
-}
+    // int sockfd, listen_status, bind_status;
 
-void    handle_post_request()
-{
-    std::cout << "Handling post request is running ..." << std::endl;
-}
-
-void    handle_delete_request()
-{
-    std::cout << "Handling delete request is running ..." << std::endl;
-}
-
-void    Server::run()
-{
-    int sockfd, listen_status, bind_status;
-    struct sockaddr_in data;
-    RequestParser *parser = new RequestParser(); // just to test the request parser
-
-    bzero(&data, sizeof(data));
-    data.sin_family = AF_INET;
-    data.sin_port = htons(this->server_configs->port);
-    data.sin_addr.s_addr = INADDR_ANY;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    bind_status = bind(sockfd, (struct sockaddr *) &data, sizeof(data));
-    listen_status = listen(sockfd, this->server_configs->max_connections);
-    while (1)
-    {
-        unsigned int data_size = sizeof(data);
-        int acc_conn = accept(sockfd, (struct sockaddr *) &data, &data_size);
-        t_request *req = parser->parse_request(acc_conn);
-        print_request(req);
-        if (req->method == "GET")
-            handle_get_request();
-        else if (req->method == "POST")
-            handle_post_request();
-        else if (req->method == "DELETE")
-            handle_delete_request();
-        delete req;
-    }
+    // bzero(&data, sizeof(data));
+    // data.sin_family = AF_INET;
+    // data.sin_port = htons(this->server_configs->port);
+    // data.sin_addr.s_addr = INADDR_ANY;
+    // sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // if (sockfd < 0)
+    //     throw SocketException();
+    // bind_status = bind(sockfd, (struct sockaddr *) &data, sizeof(data));
+    // if (bind_status < 0)
+    //     throw BindException();
+    // listen_status = listen(sockfd, this->server_configs->max_connections);
+    // if (listen_status < 0)
+    //     throw ListenException();
+    // while (1)
+    // {
+    //     unsigned int data_size = sizeof(data);
+    //     int acc_conn = accept(sockfd, (struct sockaddr *) &data, &data_size);
+    //     t_request *req = parser->parse_request(acc_conn);
+    //     print_request(req);
+    //     if (req->method == "GET")
+    //         handle_get_request(acc_conn, req);
+    //     else if (req->method == "POST")
+    //         handle_post_request(acc_conn, req);
+    //     else if (req->method == "DELETE")
+    //         handle_delete_request(acc_conn, req);
+    //     delete req;
+    // }
 }
