@@ -1,5 +1,5 @@
 EXEC = Webserv
-CPP_VERSION = -std=c++98 -fsanitize=address
+CPP_VERSION = -std=c++11 -fsanitize=address
 SRCS = main.cpp WebServer/WebServer.cpp WebServer/ConfigFileParser/TokensChecker.cpp WebServer/ConfigFileParser/ConfigFileParser.cpp \
 WebServer/Server/Server.cpp WebServer/Server/RequestResponse/RequestResponse.cpp \
 WebServer/Server/RequestResponse/RequestParser/RequestParser.cpp WebServer/Server/RequestResponse/ResponseBuilder/ResponseBuilder.cpp  \

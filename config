@@ -3,31 +3,11 @@ http
     server
     {
         server_name name
-        port 8090
+        port 9091
         root /ro
         index index.html index.php home.html home.php
         allowed_methods GET POST DELETE
-        max_connections 2
-        max_body_size k
-        max_clients 1000
-        fast_cgi .py /users/hel-mefe/Applications/python3
-        fast_cgi .php /users/hel-mefe/Applications/php
-
-        location /fjkkdsjf
-        {
-            404 not_found.html not_found.php
-        }
+        max_connections 20
     }
 
-    server
-    {
-        server_name kdf
-        port 9090
-        root /klfdksf
-        location /merci
-        {
-            root /ok
-            port 9999
-        }
-    }
 }

@@ -57,6 +57,16 @@ class ListenException : public std::exception
         }
 } ;
 
+class MultiplexerException : public std::exception
+{
+    public:
+        const char *what() const _NOEXCEPT
+        {
+            return ("Multiplexer error!");
+        }
+} ;
+
+
 
 
 

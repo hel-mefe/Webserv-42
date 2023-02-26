@@ -27,6 +27,7 @@
 # include <string.h>
 # include <fcntl.h>
 # include <netdb.h>
+# include <sys/event.h>
 
 // # define cout std::cout
 // # define cin std::cin
@@ -44,6 +45,12 @@
 # define SOCKET int
 # define HashMap std::unordered_map
 # define HashSet std::unordered_set
+
+# define SA struct sockaddr
+# define SA_IN struct sockaddr_in
+# define SOCKET_NOT_DEFINED 0
+
+typedef struct kevent k_event;
 
 # define sz(x) ((int)x.size())
 

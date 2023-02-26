@@ -19,6 +19,7 @@ class RequestParser
         void                        set_identifier_value(t_request *request, std::string &id, std::string &value);
         void                        set_request_line(t_request *request, std::string &res);
         void                        parse_first_line(t_request *request, std::string &line);
+        
         t_request *get_request(std::vector<std::string> &res);
         t_request *parse_request(int fd);
 } ;

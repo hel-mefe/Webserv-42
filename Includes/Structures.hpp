@@ -22,7 +22,7 @@ typedef struct ServerAttributes
     bool                                auto_indexing;
     bool                                connection; // keep-alive or closed
 
-    ServerAttributes() : max_connections(5){}
+    ServerAttributes() : max_connections(10){}
 }   t_server_configs;
 
 typedef struct LocationConfigs
@@ -66,17 +66,49 @@ typedef struct response
 
 typedef struct Header
 {
-    std::string     method;
-    std::string     connection;
-    std::string     path;
-    std::string     http_version;
-    int             content_length;
+    std::vector<std::string>                request_lines;
+    HashMap<std::string, std::string>       request_map;
+    HashMap<std::string, int>               request_map_ints;
+    HashMap<std::string, std::vector<int> > request_map_vec;
+    std::string                             method;
+    std::string                             connection;
+    std::string                             path;
+    std::string                             http_version;
+    std::string                             body;
+    std::string                             split;
+    std::string                             accept_content;
+    int                                     content_length;
+    int                                     request_len;
+    bool                                    is_header_complete;
 }   t_request;
+
+typedef struct sock
+{
+    SOCKET      fd;
+    SA_IN       data;
+    socklen_t   data_len;
+    bool        is_listener;
+    bool        is_header_complete;
+    std::string header;
+    std::string body;
+    t_request   *request;
+    t_response  *response;
+}   t_socket;
 
 typedef struct globalVars
 {
     HashSet<std::string>        supported_methods_set;
     HashMap<int, std::string>   codes_map;
 }   globals;
+
+typedef struct network
+{
+    int                         kq;
+    unsigned int                num_connections;
+    k_event                     *changeList;
+    k_event                     *eventList;
+    HashMap<SOCKET, int>        socket_index;
+    std::queue<int>             clients_indexes;
+}   t_network;
 
 #endif
