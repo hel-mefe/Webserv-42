@@ -2,24 +2,65 @@
 
 RequestParser::RequestParser()
 {
+    init_token_types();
     return ;
 }
 
 RequestParser::RequestParser(const RequestParser &r)
 {
+    init_token_types();
     return ;
 }
 
 RequestParser& RequestParser::operator=(const RequestParser &r)
 {
+    init_token_types();
     return (*this) ;
 }
 
 RequestParser::~RequestParser()
 {
+    init_token_types();
     return ;
 }
 
+void    RequestParser::init_token_types()
+{
+    token_types.insert(std::make_pair("connection", STRING));
+    token_types.insert(std::make_pair("content-length", INT));
+    token_types.insert(std::make_pair("accept", STRING_VECTOR));
+    token_types.insert(std::make_pair("host", STRING));
+    token_types.insert(std::make_pair("accept-encoding", STRING_VECTOR));
+    token_types.insert(std::make_pair("user-agent", STRING));
+}
+
+void    RequestParser::parse_string_token(t_request *req, std::string &first, std::string &second)
+{
+    req->header_map.insert(std::make_pair(first, second));
+    req->header_map.insert(std::make_pair(first, second));
+}
+
+void    RequestParser::parse_int_token(t_request *req, std::string &first, std::string &second)
+{
+    req->header_map_ints.insert(std::make_pair(first, std::stoi(second)));
+    req->header_map.insert(std::make_pair(first, second));
+}
+
+void    RequestParser::parse_string_vector_token(t_request *req, std::string &first, std::string &second, char splitter)
+{
+    std::vector<std::string>    vec;
+
+    for (int i = 0; i < sz(second); i++)
+    {
+        int j = i;
+        for (;i < sz(second) && second[i] != splitter; i++);
+        std::string s = second.substr(j, i - j);
+        vec.push_back(s);
+        i += (i < sz(second) && second[i] == splitter);
+    }
+    req->header_map_vec.insert(std::make_pair(first, vec));
+    req->header_map.insert(std::make_pair(first, second));
+}
 
 // std::vector<std::string>* RequestParser::get_request_as_vector(int fd)
 // {
@@ -123,43 +164,34 @@ void    RequestParser::print_request(t_request *req)
 {
     std::cout << "****** printing the request ******\n" << std::endl;
     std::cout << "is header complete: " << ((req->is_header_complete) ? "True" : "False") << std::endl;
-    for (auto x : req->request_map)
+    for (auto x : req->header_map)
         std::cout << x.first << " -> " << x.second << std::endl;
     std::cout << "****** end printing the request ******\n" << std::endl;
 }
 
-void    RequestParser::read_request(SOCKET fd, t_request *req)
+void    RequestParser::read_request(SOCKET fd, t_request *req) // should set true if request header was entirely read
 {
     char    buff[BUFFER_SIZE];
-    char    *line = get_next_line(fd);
+    char    *line;
     int     len;
     std::string s;
     bool    is_header_complete = false;
 
-    if (!line)
-        return ;
-    s = std::string(line);
-    if (s == "\r\n")
-    {
-        req->is_header_complete = true;
-        return ;
-    }
     std::cout << "Got here and currently reading" << std::endl;
     while (1)
     {
         line = get_next_line(fd);
-        std::cout << line << std::endl;
+        std::cout << line;
         if (!line)
             break ;
         s = line;
-        std::cout << "string: " << s << std::endl;
-        req->request_lines.push_back(s);
-        req->request_len += sz(s);
-        if (line)
-            free(line);
         is_header_complete = (s == "\r\n");
         if (is_header_complete)
             break ;
+        req->header_lines.push_back(s);
+        req->request_len += sz(s);
+        if (line)
+            free(line);
     }
     std::cout << "   ***************    " << std::endl;
     req->is_header_complete = is_header_complete;
@@ -168,34 +200,73 @@ void    RequestParser::read_request(SOCKET fd, t_request *req)
 
 void    RequestParser::parse_line(std::string &s, t_request *req)
 {
-    int i;
+    int i, j;
     std::string first;
     std::string second;
 
     i = 0;
-    for (; i < sz(s) && isspace(s[i]); i++); // skipping white spaces at the beginning
-    for (; i < sz(s) && s[i] != ':' && !isspace(s[i]) ; i++); // taking till ':'
+    for (i = 0; i < sz(s) && s[i] != ':'; i++);
+    if (i == sz(s))
+        return ;
+    for (j = sz(s) - 1; j >= 0 && isspace(s[j]); j--);
+    j++;
     first = s.substr(0, i);
-    for (int j = 0; j < sz(first); j++) // lowercasing the first string
+    for (; i < sz(s) && isspace(s[i]); i++);
+    second = s.substr(i, j - i);
+    for (j = 0; j < sz(first); j++) // lowercasing the first string
         first[j] = (isalpha(first[j]) ? tolower(first[j]) : first[j]);
-    for (; i < sz(s) && isspace(s[i]); i++); // skipping white spaces
-    i += (i < sz(s) && s[i] == ':'); // taking one step forward if i == ':'
-    second = s.substr(i, sz(s) - i);
-    for (int j = 0; j < sz(second); j++) // lowercasting the second string
+    for (j = 0; j < sz(second); j++) // lowercasting the second string
         second[j] = (isalpha(second[j]) ? tolower(second[j]) : second[j]);
-    // if (token_types.find(first) == token_types.end())
-    // {
-    //     std::cout << "Token type was not found!" << std::endl;
-    //     return ;
-    // }
+    req->header_map.insert(std::make_pair(first, second));
     // TOKEN type = token_types[first];
-    req->request_map.insert(std::make_pair(first, second));
+    // // req->header_map.insert(std::make_pair(first, second));
     // if (type == STRING)
-    //     req->request_map.insert(std::make_pair(first, second)); // (first -> second)
+    //     parse_string_token(req, first, second);
     // else if (type == INT)
-    //     req->request_map_ints.insert(std::make_pair(first, std::stoi(second)));
+    //     parse_int_token(req, first, second);
     // else if (type == STRING_VECTOR)
-    //     req->request_map_vec.insert(std::make_pair(first, std::vector))
+    //     parse_string_vector_token(req, first, second, ',');
+}
+
+void    RequestParser::parse_first_line(std::string &first_line, t_request *req)
+{
+    std::string method;
+    std::string path;
+    std::string http_version;
+    int i = 0, j = 0;
+
+    for (; i < sz(first_line) && isspace(first_line[i]); i++);
+    j = i;
+    for (; i < sz(first_line) && !isspace(first_line[i]); i++);
+    method = first_line.substr(j, i - j);
+    for (; i < sz(first_line) && isspace(first_line[i]); i++);
+    j = i;
+    for (; i < sz(first_line) && !isspace(first_line[i]); i++);
+    path = first_line.substr(j, i - j);
+    for (; i < sz(first_line) && isspace(first_line[i]); i++);
+    j = i;
+    for (; i < sz(first_line) && !isspace(first_line[i]); i++);
+    http_version = first_line.substr(j, i - j);
+    for (i = 0; i < sz(method); i++)
+        method[i] = (isalpha(method[i]) ? toupper(method[i]) : method[i]);
+    for (i = 0; i < sz(http_version); i++)
+        http_version[i] = (isalpha(http_version[i]) ? toupper(http_version[i]) : http_version[i]);
+    req->method = method;
+    req->path = path;
+    req->http_version = http_version;
+}
+
+void    RequestParser::print_header(t_request *req)
+{
+    std::cout << " **** start request header **** " << std::endl;
+    std::cout << "Method: " << req->method << std::endl;
+    std::cout << "Path: " << req->path << std::endl;
+    std::cout << "Http_Version: " << req->http_version << std::endl;
+    std::cout << "    ---- START HEADER LINES ----";
+    for (auto x: req->header_map)
+        std::cout << x.first << ": " << x.second << std::endl;
+    std::cout << "    ---- END HEADER LINES ----";
+    std::cout << " **** end request header   **** " << std::endl;
 }
 
 void    RequestParser::parse_request(t_socket *client) // main function in this class 
@@ -204,9 +275,9 @@ void    RequestParser::parse_request(t_socket *client) // main function in this 
         read_request(client->fd, client->request);
     if (client->request->is_header_complete)
     {
-        std::vector<std::string> *lines = &client->request->request_lines;
-        for (int i = 0; i < sz((*lines)); i++)
-            parse_line(lines->at(i), client->request);
-        print_request(client->request);
+        std::vector<std::string> *lines = &client->request->header_lines;
+        for (int i = 0; i < sz((*lines)); i++)            
+            ((i == 0) ? parse_first_line(lines->at(i), client->request) : parse_line(lines->at(i), client->request));
+        print_header(client->request);
     }
 }

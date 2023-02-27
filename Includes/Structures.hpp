@@ -66,20 +66,19 @@ typedef struct response
 
 typedef struct Header
 {
-    std::vector<std::string>                request_lines;
-    HashMap<std::string, std::string>       request_map;
-    HashMap<std::string, int>               request_map_ints;
-    HashMap<std::string, std::vector<int> > request_map_vec;
-    std::string                             method;
-    std::string                             connection;
-    std::string                             path;
-    std::string                             http_version;
-    std::string                             body;
-    std::string                             split;
-    std::string                             accept_content;
-    int                                     content_length;
-    int                                     request_len;
-    bool                                    is_header_complete;
+    std::vector<std::string>                        header_lines; // all the lines of the header stored in a  
+    HashMap<std::string, std::string>               header_map; // header map (currently working with it)
+    HashMap<std::string, int>                       header_map_ints; // header map for elements that accept ints (for future use)
+    HashMap<std::string, std::vector<std::string> > header_map_vec; // header map for elements that accept multiple values (for future use)
+    std::string                                     method; // by convention uppercased (POST, GET, DELETE)
+    std::string                                     path; // self-explained (:D)
+    std::string                                     http_version; // by convention uppercased (HTTP/1.1)
+    std::string                                     connection; // for future use
+    std::string                                     body; // for future use
+    std::string                                     accept_content; // for future use
+    int                                             content_length; // for future use
+    int                                             request_len; // for future use
+    bool                                            is_header_complete;
 }   t_request;
 
 typedef struct sock

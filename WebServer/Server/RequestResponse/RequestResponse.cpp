@@ -83,6 +83,7 @@ void    RequestResponse::init_token_types()
     token_types.insert(std::make_pair("accept-encoding", STRING_VECTOR));
     token_types.insert(std::make_pair("user-agent", STRING));
 }
+
 RequestResponse::RequestResponse() : request_parser(0)
 {
     request_parser = new RequestParser();
